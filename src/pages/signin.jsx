@@ -119,7 +119,6 @@ function LoginPage() {
           Don't have an account? <Link to="/register">Register</Link>
         </RegisterLink>
       </Form>
-      <ConnectWallet />
     </Container>
   );
 }
