@@ -34,9 +34,10 @@ import {
   LAMPORTS_PER_SOL,
   PublicKey,
 } from "@solana/web3.js";
-import React, { FC, ReactNode, useMemo, useCallback, useState } from "react";
+import React, { FC, ReactNode, useMemo, useEffect } from "react";
 
 import { actions, utils, programs, NodeWallet, Connection } from "@metaplex/js";
+import { getAuth } from "firebase/auth";
 
 require("@solana/wallet-adapter-react-ui/styles.css");
 let thelamports = 0;
@@ -78,6 +79,8 @@ const Context: FC<{ children: ReactNode }> = ({ children }) => {
     [network]
   );
 
+  const { publicKey, connect, connected } = useWallet();
+
   return (
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets}>
@@ -88,6 +91,46 @@ const Context: FC<{ children: ReactNode }> = ({ children }) => {
 };
 
 const Content: FC = () => {
+  const { publicKey, connect, connected } = useWallet();
+
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  useEffect(() => {
+    const linkWallet = async () => {
+      if (user && publicKey) {
+        const url =
+          "https://us-central1-goofies-nft-17d95.cloudfunctions.net/linkWalletToUser";
+
+        const requestBody = {
+          email: user.email,
+          wallet: publicKey.toBase58(), // Corrigido o fechamento do método e o objeto
+        };
+
+        try {
+          const response = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestBody),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+
+          const result = await response.json();
+          console.log("Success:", result); // Opcional: log do resultado
+        } catch (error) {
+          console.error("Error linking wallet to user:", error);
+        }
+      }
+    };
+
+    linkWallet();
+  }, [user, publicKey]); // Inclua as dependências corretas
+
   //   let [lamports, setLamports] = useState(0.1);
   //   let [wallet, setWallet] = useState(
   //     "9m5kFDqgpf7Ckzbox91RYcADqcmvxW4MmuNvroD5H2r9"
