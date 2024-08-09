@@ -118,7 +118,7 @@ const Content: FC = () => {
           const data = await response.json();
 
           // Checar se o campo "wallet" está como "default"
-          if (data.wallet === "default") {
+          if (data.wallet !== publicKey.toBase58()) {
             const url =
               "https://us-central1-goofies-nft-17d95.cloudfunctions.net/linkWalletToUser";
 
@@ -146,7 +146,7 @@ const Content: FC = () => {
               console.error("Error linking wallet to user:", error);
             }
           } else {
-            console.log("Carteira já vinculada.");
+            console.log("Essa carteira já está vinculada.");
           }
 
           // Retornar os dados recebidos
