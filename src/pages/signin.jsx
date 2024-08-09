@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./../firebaseConfig";
 import ConnectWallet from "../components/ConnectWallet";
+import Background from "../components/background/Background";
 
 export const Container = styled.div`
   display: flex;
@@ -24,6 +25,10 @@ const Form = styled.form`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 400px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 const Input = styled.input`
@@ -98,28 +103,29 @@ function LoginPage() {
   };
 
   return (
-    <Container>
-      <Form onSubmit={handleLogin}>
-        <Title>Login</Title>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <Input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <Input
-          type="password"
-          placeholder="Senha"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <Button type="submit">Entrar</Button>
-        <RegisterLink>
-          Don't have an account? <Link to="/register">Register</Link>
-        </RegisterLink>
-      </Form>
-    </Container>
+    <>
+      <Background />
+        <Form onSubmit={handleLogin}>
+          <Title>Login</Title>
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          <Input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <Input
+            type="password"
+            placeholder="Senha"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Button type="submit">Entrar</Button>
+          <RegisterLink>
+            Don't have an account? <Link to="/register">Register</Link>
+          </RegisterLink>
+        </Form>
+    </>
   );
 }
 

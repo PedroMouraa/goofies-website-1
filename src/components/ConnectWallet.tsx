@@ -317,6 +317,10 @@ const Content: FC = () => {
         width: "300px",
         height: "300px",
         textAlign: "center",
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
       }}
     >
       {!connected && <StyledTitle>Connect Wallet</StyledTitle>}

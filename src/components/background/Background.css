@@ -1,0 +1,128 @@
+body {
+    justify-content: center;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.absolute {
+    position: absolute;
+    inset: 0;
+    /* justify-content: center; */
+    /* display: inline-flex; */
+    /* flex-direction: row; */
+    background-color: #1b212e;
+    overflow: hidden;
+}
+
+.jusify-center {
+    justify-content: center;
+}
+
+.bg-shape1 {
+    width: 500px;
+    height: 500px;
+    border-radius: 9999px;
+    position: absolute;
+    animation: one 20s infinite;
+    left: 200px;
+    top: 400px;
+}
+
+.bg-shape2 {
+    width: 400px;
+    height: 400px;
+    border-radius: 9999px;
+    position: absolute;
+    animation: two 15s infinite;
+    left: 250px;
+    top: 320px;
+}
+
+.bg-shape3 {
+    width: 300px;
+    height: 300px;
+    border-radius: 9999px;
+    position: absolute;
+    animation: three 12s infinite;
+    left: 350px;
+    top: 250px;
+}
+
+.bg-shape4 {
+    width: 250px;
+    height: 250px;
+    border-radius: 9999px;
+    position: absolute;
+    animation: four 10s infinite;
+    left: 400px;
+    top: 150px;
+}
+
+.bg-shape5 {
+    width: 150px;
+    height: 150px;
+    border-radius: 9999px;
+    position: absolute;
+    animation: five 10s infinite;
+    left: 500px;
+    top: 50px;
+}
+
+@keyframes one {
+    0% { left: 200px; top: 400px; }
+    50% { left: 50px; top: 100px; }
+    100% { left: 200px; top: 400px; }
+}
+
+@keyframes two {
+    0% { left: 250px; top: 320px; }
+    50% { left: 60px; top: 600px; }
+    100% { left: 250px; top: 320px; }
+}
+
+@keyframes three {
+    0% { left: 350px; top: 250px; }
+    50% { left: 750px; top: 350px; }
+    100% { left: 350px; top: 250px;}
+}
+
+@keyframes four {
+    0% { left: 400px; top: 150px; }
+    50% { left: 800px; top: 20px; }
+    100% { left: 400px; top: 150px; }
+}
+
+@keyframes five {
+    0% { left: 500px; top: 50px; }
+    50% { left: 1200px; top: 500px; }
+    100% { left: 500px; top: 50px; }
+}
+
+
+.opacity-50 {
+    opacity: .5;
+}
+
+.bg-blur {
+    filter: blur(80px);
+}
+
+.bg-green {
+    background-color: #40557d;
+}
+
+.bg-blue {
+    background-color: #754688;
+}
+
+.bg-orange {
+    background-color: #e48252;
+}
+
+.bg-yellow {
+    background-color: #5d9668;
+}
+
+.bg-pink {
+    background-color: #d8688e;
+}

@@ -6,6 +6,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import Background from "../components/background/Background";
 
 const Container = styled.div`
   display: flex;
@@ -26,6 +27,10 @@ const Form = styled.form`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 400px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 const Input = styled.input`
@@ -111,7 +116,8 @@ function RegisterPage() {
   };
 
   return (
-    <Container>
+    <>
+      <Background />
       <Form onSubmit={handleRegister}>
         <Title>Register</Title>
         <Input
@@ -137,7 +143,7 @@ function RegisterPage() {
           Already have an account? <Link to="/">Log in now</Link>
         </RegisterLink>
       </Form>
-    </Container>
+    </>
   );
 }
 
