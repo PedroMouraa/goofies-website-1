@@ -45,12 +45,71 @@ import React, {
 
 import { actions, utils, programs, NodeWallet, Connection } from "@metaplex/js";
 import { getAuth } from "firebase/auth";
+import styled from "styled-components";
+
+const StyledInput = styled.input`
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid #6a0dad; /* Borda roxa */
+  border-radius: 5px;
+  outline: none;
+  margin-right: 10px;
+  transition: border-color 0.3s ease;
+
+  &:focus {
+    border-color: #8a2be2; /* Borda mais clara ao focar */
+  }
+
+  &:disabled {
+    background-color: #f0f0f0;
+    cursor: not-allowed;
+    border-color: #cccccc;
+  }
+`;
+
+const StyledButton = styled.button`
+  background-color: #6a0dad; /* Fundo roxo */
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #8a2be2; /* Fundo mais claro ao passar o mouse */
+  }
+
+  &:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+`;
+
+const StyledTitle = styled.h2`
+  color: white; /* Cor branca para o texto */
+  margin-top: -70px;
+  margin-bottom: 50px;
+  font-size: 28px; /* Tamanho da fonte maior para destaque */
+  font-weight: bold;
+  text-align: center;
+  background: linear-gradient(90deg, #6a0dad, #8a2be2); /* Gradiente roxo */
+  padding: 5px;
+  border-radius: 8px; /* Bordas arredondadas */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para destacar */
+  width: fit-content; /* Ajuste de largura */
+  margin-left: auto;
+  margin-right: auto;
+`;
+
+
 
 require("@solana/wallet-adapter-react-ui/styles.css");
 let thelamports = 0;
 // let theWallet = "3fC3M6ZMctfdweWPyFGy3YcZDznzpkGcGJ48JY48HEjJ";
 
-function getWallet() {}
+function getWallet() { }
 
 const ConnectWallet: FC = () => {
   return (
@@ -100,6 +159,7 @@ const Context: FC<{ children: ReactNode }> = ({ children }) => {
 const Content: FC = () => {
   const { publicKey, connect, connected, sendTransaction } = useWallet();
   const token = localStorage.getItem("jwt");
+  const [inputDisabled, setInputDisabled] = useState(false);
 
   const auth = getAuth();
   const user = auth.currentUser;
@@ -235,16 +295,47 @@ const Content: FC = () => {
     thelamports = value;
   }
 
+  function handleInputChange(e: any) {
+    if (!inputDisabled) {
+      setValue(e.target.value);
+      setInputDisabled(true); // Desabilita o input após a primeira alteração
+    }
+  }
+
   function setTheWallet(e: any) {
     setWalletToSend(e.target.value);
     setWalletToSend = e.target.value;
   }
 
   return (
-    <div>
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '20px', 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      padding: '20px', 
+      backgroundColor: 'white', 
+      borderRadius: '10px', 
+      width: '300px', 
+      height: '300px',
+      textAlign:'center'
+    }}>
+      {!connected && (
+        <StyledTitle>Connect Wallet</StyledTitle>
+      )}
       <WalletMultiButton />
-      <input value={value} onChange={setTheLamports} />
-      <button onClick={TransferGoofies}>Send Sol</button>
+      {connected && (
+        <>
+          <StyledInput
+            value={value}
+            onChange={handleInputChange}
+            disabled={inputDisabled} // Controla a desativação do input
+          />
+          <StyledButton onClick={TransferGoofies}>Send Solana</StyledButton>
+        </>
+      )}
     </div>
+
   );
 };
