@@ -34,14 +34,21 @@ import {
   LAMPORTS_PER_SOL,
   PublicKey,
 } from "@solana/web3.js";
-import React, { FC, ReactNode, useMemo, useEffect } from "react";
+import React, {
+  FC,
+  ReactNode,
+  useMemo,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 
 import { actions, utils, programs, NodeWallet, Connection } from "@metaplex/js";
 import { getAuth } from "firebase/auth";
 
 require("@solana/wallet-adapter-react-ui/styles.css");
 let thelamports = 0;
-let theWallet = "9m5kFDqgpf7Ckzbox91RYcADqcmvxW4MmuNvroD5H2r9";
+// let theWallet = "3fC3M6ZMctfdweWPyFGy3YcZDznzpkGcGJ48JY48HEjJ";
 
 function getWallet() {}
 
@@ -91,7 +98,7 @@ const Context: FC<{ children: ReactNode }> = ({ children }) => {
 };
 
 const Content: FC = () => {
-  const { publicKey, connect, connected } = useWallet();
+  const { publicKey, connect, connected, sendTransaction } = useWallet();
   const token = localStorage.getItem("jwt");
 
   const auth = getAuth();
@@ -161,50 +168,83 @@ const Content: FC = () => {
     linkWallet();
   }, [user, publicKey]); // Inclua as dependências corretas
 
-  //   let [lamports, setLamports] = useState(0.1);
-  //   let [wallet, setWallet] = useState(
-  //     "9m5kFDqgpf7Ckzbox91RYcADqcmvxW4MmuNvroD5H2r9"
-  //   );
+  let [value, setValue] = useState(0.1);
+  let [walletToSend, setWalletToSend] = useState(
+    "3fC3M6ZMctfdweWPyFGy3YcZDznzpkGcGJ48JY48HEjJ"
+  );
 
-  //   // const { connection } = useConnection();
-  //   const connection = new Connection(clusterApiUrl("devnet"));
-  //   const { publicKey, sendTransaction } = useWallet();
+  const connection = new Connection(clusterApiUrl("devnet"));
 
-  //   const onClick = useCallback(async () => {
-  //     if (!publicKey) throw new WalletNotConnectedError();
-  //     connection.getBalance(publicKey).then((bal) => {
-  //       console.log(bal / LAMPORTS_PER_SOL);
-  //     });
+  const TransferGoofies = useCallback(async () => {
+    if (!publicKey) throw new WalletNotConnectedError();
+    connection.getBalance(publicKey).then((bal) => {
+      console.log(bal / LAMPORTS_PER_SOL);
+    });
 
-  //     let lamportsI = LAMPORTS_PER_SOL * lamports;
-  //     console.log(publicKey.toBase58());
-  //     console.log("lamports sending: {}", thelamports);
-  //     const transaction = new Transaction().add(
-  //       SystemProgram.transfer({
-  //         fromPubkey: publicKey,
-  //         toPubkey: new PublicKey(theWallet),
-  //         lamports: lamportsI,
-  //       })
-  //     );
+    let lamportValue = LAMPORTS_PER_SOL * Number(value);
+    console.log(publicKey.toBase58());
+    console.log("value sending: {}", thelamports);
+    const transaction = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: publicKey,
+        toPubkey: new PublicKey(walletToSend),
+        lamports: lamportValue,
+      })
+    );
 
-  //     const signature = await sendTransaction(transaction, connection);
+    const signature = await sendTransaction(transaction, connection);
 
-  //     await connection.confirmTransaction(signature, "processed");
-  //   }, [publicKey, sendTransaction, connection]);
+    const confirm = await connection.confirmTransaction(signature, "processed");
 
-  //   function setTheLamports(e: any) {
-  //     console.log(Number(e.target.value));
-  //     setLamports(Number(e.target.value));
-  //     lamports = e.target.value;
-  //     thelamports = lamports;
-  //   }
-  //   function setTheWallet(e: any) {
-  //     setWallet(e.target.value);
-  //     theWallet = e.target.value;
-  //   }
+    if (confirm) {
+      const url =
+        "https://us-central1-goofies-nft-17d95.cloudfunctions.net/linkWalletToUser";
+
+      const requestBody = {
+        wallet: publicKey,
+        solAmount: value, // Corrigido o fechamento do método e o objeto
+      };
+
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log("Success:", result); // Opcional: log do resultado
+      } catch (error) {
+        console.error("Error linking wallet to user:", error);
+      }
+    }
+
+    console.log(confirm);
+  }, [publicKey, sendTransaction, connection]);
+
+  function setTheLamports(e: any) {
+    console.log(Number(e.target.value));
+    setValue(e.target.value);
+    value = e.target.value;
+    thelamports = value;
+  }
+
+  function setTheWallet(e: any) {
+    setWalletToSend(e.target.value);
+    setWalletToSend = e.target.value;
+  }
+
   return (
     <div>
       <WalletMultiButton />
+      <input value={value} onChange={setTheLamports} />
+      <button onClick={TransferGoofies}>Send Sol</button>
     </div>
   );
 };
