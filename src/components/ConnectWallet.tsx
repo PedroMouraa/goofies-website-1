@@ -92,6 +92,7 @@ const Context: FC<{ children: ReactNode }> = ({ children }) => {
 
 const Content: FC = () => {
   const { publicKey, connect, connected } = useWallet();
+  const token = localStorage.getItem("jwt");
 
   const auth = getAuth();
   const user = auth.currentUser;
@@ -100,30 +101,59 @@ const Content: FC = () => {
     const linkWallet = async () => {
       if (user && publicKey) {
         const url =
-          "https://us-central1-goofies-nft-17d95.cloudfunctions.net/linkWalletToUser";
-
-        const requestBody = {
-          email: user.email,
-          wallet: publicKey.toBase58(), // Corrigido o fechamento do método e o objeto
-        };
+          "https://us-central1-goofies-nft-17d95.cloudfunctions.net/getUserDetailsWithToken";
 
         try {
           const response = await fetch(url, {
-            method: "POST",
+            method: "GET",
             headers: {
-              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(requestBody),
           });
 
           if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+            throw new Error(`Error: ${response.status}`);
           }
 
-          const result = await response.json();
-          console.log("Success:", result); // Opcional: log do resultado
+          const data = await response.json();
+
+          // Checar se o campo "wallet" está como "default"
+          if (data.wallet === "default") {
+            const url =
+              "https://us-central1-goofies-nft-17d95.cloudfunctions.net/linkWalletToUser";
+
+            const requestBody = {
+              email: user.email,
+              wallet: publicKey.toBase58(), // Corrigido o fechamento do método e o objeto
+            };
+
+            try {
+              const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(requestBody),
+              });
+
+              if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+              }
+
+              const result = await response.json();
+              console.log("Success:", result); // Opcional: log do resultado
+            } catch (error) {
+              console.error("Error linking wallet to user:", error);
+            }
+          } else {
+            console.log("Carteira já vinculada.");
+          }
+
+          // Retornar os dados recebidos
+          return data;
         } catch (error) {
-          console.error("Error linking wallet to user:", error);
+          console.error("Erro ao fazer a requisição:", error);
+          return null;
         }
       }
     };
